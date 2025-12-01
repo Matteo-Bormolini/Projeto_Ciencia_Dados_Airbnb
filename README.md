@@ -1,39 +1,99 @@
-# Projeto_Ciencia_Dados
+# 🏡 Projeto: Previsão de Preço de Aluguel de Imóveis (Airbnb - Rio de Janeiro)
+## 📊 Visão Geral<br>
+Este projeto é uma Prova de Conceito (PoC) de Machine Learning com o objetivo de fornecer uma estimativa de preço de diária para imóveis anunciados no Airbnb na região do Rio de Janeiro.
 
-### Contexto
+O foco é auxiliar o proprietário (Host) a definir um preço de diária competitivo para seu imóvel, ou auxiliar o viajante (Locador) a avaliar se o preço de um imóvel está atrativo (abaixo da média) dadas as suas características.
 
-No Airbnb, qualquer pessoa que tenha um quarto ou um imóvel de qualquer tipo (apartamento, casa, chalé, pousada, etc.) pode ofertar o seu imóvel para ser alugado por diária.
 
-Você cria o seu perfil de host (pessoa que disponibiliza um imóvel para aluguel por diária) e cria o anúncio do seu imóvel.
+Público-alvo: Hosts e Locadores da plataforma Airbnb.
 
-Nesse anúncio, o host deve descrever as características do imóvel da forma mais completa possível, de forma a ajudar os locadores/viajantes a escolherem o melhor imóvel para eles (e de forma a tornar o seu anúncio mais atrativo)
+Valor Gerado: Definição de preços mais precisos e competitivos, fundamentados em dados, minimizando perdas por subvalorização ou excesso de preço.
 
-Existem dezenas de personalizações possíveis no seu anúncio, desde quantidade mínima de diária, preço, quantidade de quartos, até regras de cancelamento, taxa extra para hóspedes extras, exigência de verificação de identidade do locador, etc.
+## 💡 Funcionalidades e Resultado<br>
+O projeto permite que o usuário insira características específicas de um imóvel (número de quartos, banheiros, acomodações, etc.) e, em segundos, receba uma previsão de preço de diária baseada em dados históricos e um modelo de regressão otimizado.
+<br>
+<br>
+O modelo foi ajustado para limitar a análise e previsão ao escopo do mercado de Classe Média.
 
-### Nosso objetivo
+O resultado é consumido através de um Dashboard interativo simples criado com Streamlit.
 
-Construir um modelo de previsão de preço que permita uma pessoa comum que possui um imóvel possa saber quanto deve cobrar pela diária do seu imóvel.
+<table>
+  <tr>
+    <th>Categoria</th>
+    <th>Ferramenta</th>
+    <th>Descrição</th>
+  </tr>
+  <tr>
+    <td>Linguagem Principal</td>
+    <td>Python</td>
+    <td>Linguagem base para scripting e processamento.</td>    
+  </tr>
+  <tr>
+    <td>Análise de Dados</td>
+    <td>pandas, numpy</td>
+    <td>Limpeza, manipulação e transformação de dados (ETL)</td>    
+  </tr>
+  <tr>
+    <td>Visualização</td>
+    <td>seaborn, matplotlib, plotly.express</td>
+    <td>Análises Exploratórias (EDA)</td>    
+  </tr>
+  <tr>
+    <td>Machine Learning</td>
+    <td>scikit-learn</td>
+    <td>Modelagem preditiva (Regressão)</td>    
+  </tr>
+    <tr>
+    <td>Dashboard</td>
+    <td>Streamlit</td>
+    <td>Criação de interface para aplicação e consulta do modelo</td>    
+  </tr>
+</table>
 
-Ou ainda, para o locador comum, dado o imóvel que ele está buscando, ajudar a saber se aquele imóvel está com preço atrativo (abaixo da média para imóveis com as mesmas características) ou não.
+## 🧱 Pipeline de Desenvolvimento (Passos e Desafios de ETL)
+O projeto envolveu a unificação e o tratamento de 25 bases de dados históricas (abril de 2018 a maio de 2020) , com exceção de junho de 2018, sendo necessário um ETL robusto para padronizar os dados para o scikit-learn.
 
-### O que temos disponível, inspirações e créditos
+#### 1. Preparação e Unificação dos Dados
 
-As bases de dados foram retiradas do site kaggle: https://www.kaggle.com/allanbruno/airbnb-rio-de-janeiro
+Desafio: As 25 tabelas, de diferentes meses, não tinham um padrão claro e continham dados espalhados.
 
-Elas estão disponíveis para download abaixo da aula (se você puxar os dados direto do Kaggle pode ser que encontre resultados diferentes dos meus, afinal as bases de dados podem ter sido atualizadas).
+Ação: Padronização dos nomes das tabelas para o formato abreviado de 3 letras e ano completo (ex: jan2018), unificação de todas em uma única base.
 
-Caso queira uma outra solução, podemos olhar como referência a solução do usuário Allan Bruno do kaggle no Notebook: https://www.kaggle.com/allanbruno/helping-regular-people-price-listings-on-airbnb
+Limpeza: Remoção de dados faltantes (nulos) ou colunas com preenchimento abaixo de 10%.
 
-Você vai perceber semelhanças entre a solução que vamos desenvolver aqui e a dele, mas também algumas diferenças significativas no processo de construção do projeto.
+Tratamento de Valores: Remoção de caracteres especiais e conversão dos tipos de preço para float32 para maior leveza e precisão.
 
-- As bases de dados são os preços dos imóveis obtidos e suas respectivas características em cada mês.
-- Os preços são dados em reais (R$)
-- Temos bases de abril de 2018 a maio de 2020, com exceção de junho de 2018 que não possui base de dados
+<hr>
 
-### Expectativas Iniciais
+#### 2. Análise Exploratória e Feature Engineering
+Remoção de Outliers: Criação de limitações baseadas nos quartis (Q1, Q2, Q3, Q4) para excluir imóveis fora da faixa desejada (média classe).
 
-- Acredito que a sazonalidade pode ser um fator importante, visto que meses como dezembro costumam ser bem caros no RJ
-- A localização do imóvel deve fazer muita diferença no preço, já que no Rio de Janeiro a localização pode mudar completamente as características do lugar (segurança, beleza natural, pontos turísticos)
-- Adicionais/Comodidades podem ter um impacto significativo, visto que temos muitos prédios e casas antigos no Rio de Janeiro
+Padronização de Características: Padronização da coluna de acomodações por meio da contagem de quantos itens cada imóvel oferecia.
 
-Vamos descobrir o quanto esses fatores impactam e se temos outros fatores não tão intuitivos que são extremamente importantes.
+Criação de Features:
+
+Amenities: Foi criado um cálculo para quantificar a quantidade de amenities por imóvel, transformando o dado em numérico.
+
+Tipos Booleanos: Colunas como 'host_is_superhost' e 'instant_bookable' foram convertidas em valores numéricos booleanos.
+
+Análise: Criação de histogramas e gráficos de distribuição para analisar e limpar as variáveis cruciais (preço, número de quartos, comodidades, etc.).
+
+<hr>
+
+#### 3. Modelagem Preditiva e Dashboard
+Modelos Testados: RandomForestRegressor, LinearRegression e ExtraTreesRegressor.
+
+Seleção: O ExtraTreesRegressor apresentou o melhor desempenho.
+
+Aplicação: O modelo final foi serializado (joblib) e integrado a um Dashboard simples em Streamlit (sem foco em embelezamento) para aplicação prática.
+
+<hr>
+
+## 📚 Referências e Créditos
+Este projeto foi desenvolvido com base no curso de Análise de Dados da Hashtag Treinamentos, seguindo o passo a passo da metodologia apresentada.
+
+Bases de Dados: Retiradas do site Kaggle.
+
+Link da Fonte: https://www.kaggle.com/allanbruno/airbnb-rio-de-janeiro 
+
+Inspiração: A metodologia também utilizou como referência a solução do usuário Allan Bruno no Kaggle.
